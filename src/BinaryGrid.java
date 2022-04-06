@@ -1,7 +1,7 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BinaryGrid extends AbstractGrid {
+
     List<BinaryConstraint> constraints;
 
     protected BinaryGrid(int size) {
@@ -25,6 +25,10 @@ public class BinaryGrid extends AbstractGrid {
         domain.add(1);
         return domain;
 
+    }
+    
+    public List<BinaryConstraint> getConstraints(){
+        return constraints;
     }
 
     private void add(BinaryConstraint constr){

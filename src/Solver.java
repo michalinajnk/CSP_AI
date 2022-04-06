@@ -6,18 +6,21 @@ public class Solver {
     private Indices currFieldIndices;
     private List<Integer> valuesToCheck;
     private SolverAlgorithm algo;
+    private final Heuristic heuristic;
     private Grid grid;
     private Solutions solutions;
 
-    public Solver(SolverAlgorithm algo, String fileName) throws Exception {
+    public Solver(Heuristic heur, SolverAlgorithm algo, String fileName) throws Exception {
+        this.heuristic = heur;
         this.algo = algo;
         this.grid = algo.loadGrid(fileName);
-        this.solutions = new Solutions(algo.getSolverName(), fileName);
+        this.solutions = new Solutions(heur.getName(), algo.getSolverName(), fileName);
         System.out.println(grid.toString());
         start();
     }
 
     public Solver(Solver previousSolver, int parentVal){
+        this.heuristic = previousSolver.heuristic;
         this.algo= previousSolver.algo;
         this.grid = previousSolver.grid.copy();
         this.solutions = previousSolver.solutions;
@@ -26,7 +29,7 @@ public class Solver {
         this.solutions.increaseMovementCounter();
         start();
     }
-
+/*
     public Indices getNextField(Grid grid) {
         int gridSize = grid.getGridSize();
         for (int i = 0; i < gridSize; i++) {
@@ -42,10 +45,10 @@ public class Solver {
         return null;
     }
 
-
+*/
     private void start(){
         if(currFieldIndices == null) {
-            currFieldIndices = getNextField(grid);
+            currFieldIndices = heuristic.getNextField(grid);
             if (currFieldIndices != null) {
                 valuesToCheck = grid.getPossibleValues(currFieldIndices);
             }

@@ -9,7 +9,7 @@ enum BinaryConstraintsType{
 
 }
 
-public class BinaryConstraint{
+public class BinaryConstraint implements Constraint{
     private BinaryConstraintsType type;
     private Indices nextInd;
     private Indices previousInd;

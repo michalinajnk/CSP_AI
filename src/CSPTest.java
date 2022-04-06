@@ -14,24 +14,28 @@ public class CSPTest {
 
     //    Solutions sol = getSolutionsFor("futoshiki", "futoshiki6_6");
     //    for(Solution s: sol.getSolutions()){
-     //       System.out.println(s.toString());
+        //       System.out.println(s.toString());
      //   }
 
         //Grid binaryG = GridReader.initializeFromFile("binary/binary_6x6");
         //System.out.println(binaryG.toString());
 
+        Heuristic queueHeur = new QueueHeuristic();
+        Heuristic densHeur = new DensityHeuristic();
+        Heuristic constrHeur = new BasedOnConstraintHeuristic();
 
-        Solutions sol = getSolutionsFor("futoshiki", "futoshiki5_5");
-       for(Solution s: sol.getSolutions()){
-          System.out.println(s.toString());
-       }
+        SolverAlgorithm backtracking = new Backtracking();
+        SolverAlgorithm forwardchecking = new ForwardChecking();
+
+        Solutions sol = getSolutionsFor(constrHeur, backtracking , "futoshiki", "futoshiki5_5");
+        for(Solution s: sol.getSolutions()){
+           System.out.println(s.toString());
+        }
 
     }
 
-    static Solutions getSolutionsFor(String dir, String fileName) throws Exception {
-        //SolverAlgorithm backtracking = new Backtracking();
-        SolverAlgorithm forwardchecking = new ForwardChecking();
-        Solver solver = new Solver(forwardchecking, dir + "/" + fileName);
+    static Solutions getSolutionsFor(Heuristic heur, SolverAlgorithm alg, String dir, String fileName) throws Exception {
+        Solver solver = new Solver(heur, alg, dir + "/" + fileName);
         Solutions solutions = solver.run();
         System.out.println(solutions);
         return solutions;
@@ -52,11 +56,11 @@ public class CSPTest {
         }
     }
 
-    static List<Solutions> runforFiles(String directory, List<String> fileNames) throws Exception {
+    static List<Solutions> runforFiles(Heuristic heur, String directory, List<String> fileNames) throws Exception {
 
         List<Solutions> allSolutions = new ArrayList<>();
         for (String fileName : fileNames) {
-            Solver Solver = new Solver(new Backtracking(), directory + "/" + fileName);
+            Solver Solver = new Solver(heur, new Backtracking(), directory + "/" + fileName);
             Solutions solutions = Solver.run();
             allSolutions.add(solutions);
             System.out.println(solutions);

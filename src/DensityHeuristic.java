@@ -5,13 +5,13 @@ public class DensityHeuristic implements Heuristic{
         int gridSize = grid.getGridSize();
         Integer intensityIndex = null;
         Indices selectedField = null;
-        for (int rowNum = 0; rowNum < gridSize; rowNum++) {
-            int rowElems = grid.getRow(rowNum).stream().mapToInt(field -> field == null ? 1 : field.getNumberOfPossibleValues()).sum();
+        for (int i = 0; i < gridSize; i++) {
+            int rowElems = grid.getRow(i).stream().mapToInt(field -> field == null ? 1 : field.getNumberOfPossibleValues()).sum();
 
-            for (int colNum = 0; colNum < gridSize; colNum++) {
-                int colElems = grid.getColumn(colNum).stream().mapToInt(field -> field == null ? 1 : field.getNumberOfPossibleValues()).sum();
+            for (int j = 0; j < gridSize; j++) {
+                int colElems = grid.getColumn(j).stream().mapToInt(field -> field == null ? 1 : field.getNumberOfPossibleValues()).sum();
 
-                Indices indices = new Indices(rowNum, colNum);
+                Indices indices = new Indices(i, j);
                 Field field = grid.getFieldForCoordinates(indices);
 
                 int numberOfPossibleValues;

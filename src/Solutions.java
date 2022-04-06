@@ -3,15 +3,17 @@ import java.util.List;
 
 public class Solutions {
     private final List<Solution> allSolutions;
+    private final String heuristic;
     private final String algorithm;
     private final String fileName;
     private int moveCounter;
     private final long startTimeInterval;
     private long endTime;
 
-    public Solutions(String name, String fileName) {
+    public Solutions(String heur, String algo, String fileName) {
+        this.heuristic = heur;
         this.fileName = fileName;
-        this.algorithm = name;
+        this.algorithm = algo;
         this.allSolutions = new ArrayList<>();
         this.moveCounter = 0;
         this.startTimeInterval = System.currentTimeMillis();

@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class FutoshikiConstraint {
+public class FutoshikiConstraint implements Constraint {
 
     private Indices smaller;
     private Indices bigger;

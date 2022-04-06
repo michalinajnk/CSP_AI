@@ -17,6 +17,11 @@ public class FutoshikiGrid extends AbstractGrid{
         this.constraints = grid.constraints;
     }
 
+
+    public List<FutoshikiConstraint> getConstraints(){
+        return constraints;
+    }
+
     public ArrayList<Integer> getGridDomain(){
         ArrayList<Integer> gridDomain = new ArrayList<>();
         for(int i=1; i <= grid.size(); i++){
