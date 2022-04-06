@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BinaryGrid extends AbstractGrid {
@@ -38,7 +35,6 @@ public class BinaryGrid extends AbstractGrid {
 
     @Override
     public List<Integer> getForbiddenValues(Indices ind) {
-        addInitialConstraints();
         for (BinaryConstraint constr : constraints) {
             if(constr.getLeftSide() == ind || constr.getRightSide() == ind)
                 return List.of(constr.getForbiddenValue());
@@ -47,6 +43,7 @@ public class BinaryGrid extends AbstractGrid {
     }
 
     public void addConstraints(Indices ind){
+
         addConstraintsForRow( ind);
         addConstraintsForColumn(ind);
     }
@@ -69,6 +66,7 @@ public class BinaryGrid extends AbstractGrid {
 
     @Override
     public boolean move(Indices ind, int value){
+        addInitialConstraints();
         Field field = getFieldForCoordinates(ind);
         if(field == null) {
             setField(Field.createForSingleValue(ind, value), ind);
@@ -80,12 +78,14 @@ public class BinaryGrid extends AbstractGrid {
 
 
     public void addInitialConstraints(){
+        constraints.clear();
         for(int i=0; i < getGridSize(); i++) {
             for (int j = 0; j < getGridSize(); j++) {
                 Indices ind = new Indices(i, j);
                 addConstraints(ind);
             }
         }
+        addAllConstraintOnNumberOfValues();
     }
 
     private void addConstraintsForRow(Indices ind){
@@ -114,6 +114,8 @@ public class BinaryGrid extends AbstractGrid {
 
     }
 
+
+
     private void addConstraintsForColumn(Indices ind){
         if (ind.getNumRow() != 0 && ind.getNumRow() != getGridSize() - 1) {
             Indices previousFieldInCol = new Indices(ind.getNumRow()-1, ind.getNumCol());
@@ -133,16 +135,56 @@ public class BinaryGrid extends AbstractGrid {
                         add(new BinaryConstraint(previousFieldInCol.getPreviousIndicesInColumn(), ind.getNextIndicesInColumn(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(ind.getNextIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), ind.getNextIndicesInColumn());
                         setField(Field.createForSingleValue(previousFieldInCol.getPreviousIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), previousFieldInCol.getPreviousIndicesInColumn());
-                        }
-
+                    }
                 }
             }
         }
     }
 
+    private void addConstraintOnNumberOfValues(Tuple<Integer, Integer> zerosOnes, int i) {
+        if(zerosOnes.getKey() >= getGridSize()){
+            for(int j = 0 ;j < getGridSize(); j++) {
+                Indices  ind = new Indices(j, i);
+                Field field = getFieldForCoordinates(ind);
+                add(new BinaryConstraint(ind, 1, false));
+                setField(Field.createForSingleValue(ind, 0), ind);
+
+            }
+        } else if(zerosOnes.getValue() >= getGridSize()){
+            for(int j = 0 ;j < getGridSize(); j++) {
+                Indices  ind = new Indices(j, i);
+                Field field = getFieldForCoordinates(ind);
+                add(new BinaryConstraint(new Indices(j, i), 0, false));
+                setField(Field.createForSingleValue(ind, 1), ind);
+            }
+        }
+
+    }
+
+    private void addAllConstraintOnNumberOfValues(){
+        for(int i= 0 ; i < getGridSize(); i++){
+            Tuple<Integer, Integer> zerosOnes = getNumberOfValues(getValuesAlreadyInSeq(getColumn(i)));
+            Tuple<Integer, Integer> zerosOnesRow = getNumberOfValues(getValuesAlreadyInSeq(getRow(i)));
+            addConstraintOnNumberOfValues(zerosOnes, i);
+            addConstraintOnNumberOfValues(zerosOnesRow, i);
+        }
+
+    }
+
+    private boolean areSequencesUnique(){
+        List<List<Integer>> rows = new ArrayList<>();
+        List<List<Integer>> cols = new ArrayList<>();
+        for(int i= 0 ; i < getGridSize(); i++) {
+           cols.add(getValuesAlreadyInSeq(getColumn(i)));
+           rows.add(getValuesAlreadyInSeq(getRow(i)));
+        }
+        return areUnique(cols) && areUnique(rows);
+    }
+
+
     @Override
     protected boolean checkConstraints() {
-      if(isCorrectNumberOfValuesInSequence()) {
+        if(isCorrectNumberOfValuesInSequence() || areSequencesUnique()) {
             for (BinaryConstraint constr : constraints) {
                 switch(constr.type()) {
                     case insideDuplicates:
@@ -192,38 +234,17 @@ public class BinaryGrid extends AbstractGrid {
         return builder.toString();
     }
 
-    private boolean isCorrectNumberOfValuesInColumns(){
-        for(int i=0; i< getGridSize(); i++) {
-
-            List<Integer> checkingColumn = getColumn(i).stream()
-                    .filter(Objects::nonNull)
-                    .filter(Field::hasOneValue)
-                    .map(Field::getSingleValue)
-                    .collect(Collectors.toList());
-
-            int ones = (int) checkingColumn.stream().filter(ele -> ele == 1).count();
-            int zeros = (int) checkingColumn.stream().filter(ele -> ele == 0).count();
-            boolean isFull = (ones + zeros == getGridSize());
-
-            if (isFull && (ones != getGridSize() / 2 || zeros == getGridSize() / 2))
-                return false;
-            else if (ones > getGridSize() / 2 || zeros > getGridSize() / 2)
-                return false;
-        }
-        return true;
-
-    }
 
 
     public boolean isCorrectNumberOfValuesInSequence() {
         for(int i=0; i< getGridSize(); i++) {
             List<Integer> checkingCol =  getValuesAlreadyInSeq(getColumn(i));
             List<Integer> checkingRow =  getValuesAlreadyInSeq(getRow(i));
-
+            int size = getGridSize();
             Tuple<Integer, Integer> valuesInColumn = getNumberOfValues(checkingCol);
             boolean isFull = (valuesInColumn.getKey() + valuesInColumn.getValue() == getGridSize());
 
-            if (isFull  &&  (valuesInColumn.getKey() != getGridSize() / 2 ||  valuesInColumn.getValue() == getGridSize() / 2)) {
+            if (isFull  &&  (valuesInColumn.getKey() != getGridSize() / 2 ||  valuesInColumn.getValue() != getGridSize() / 2)) {
                 System.out.println("IS FULL AND Not correct number of val in column, numer of column: " + i);
                 System.out.println("Values in column of 0: " + valuesInColumn.getKey() + " of column: " + i);
                 System.out.println("Values in column of 1: " + valuesInColumn.getValue() + " of column: " + i);
@@ -239,7 +260,7 @@ public class BinaryGrid extends AbstractGrid {
             Tuple<Integer, Integer> valuesInRow = getNumberOfValues(checkingRow);
              isFull = (valuesInRow.getKey() + valuesInRow.getValue() == getGridSize());
 
-            if (isFull  &&  (valuesInRow.getKey() != getGridSize() / 2 ||valuesInRow.getValue() == getGridSize() / 2)) {
+            if (isFull  &&  (valuesInRow.getKey() != getGridSize() / 2 || valuesInRow.getValue() != getGridSize() / 2)) {
                 System.out.println("IS FULL AND Not correct number of val in row");
                 return false;
             }
@@ -257,7 +278,20 @@ public class BinaryGrid extends AbstractGrid {
         return new Tuple(ones, zeros);
     }
 
+
+   public boolean areUnique(List<List<Integer>> seques){
+       HashSet unique = new HashSet();
+        for(List<Integer> seq: seques ) {
+            if(seq.size() == getGridSize())
+            unique.add(seq);
+        }
+    return unique.size() == seques.size();
+    }
+
+
 }
+
+
 
 
 

@@ -30,6 +30,7 @@ public class BinaryConstraint{
             this.type = BinaryConstraintsType.endEdgeDuplicates;
             this.nextInd = null;
             this.previousInd = ind;
+
         }
 
     }
@@ -39,6 +40,7 @@ public class BinaryConstraint{
         this.previousInd = previousInd;
         this.nextInd = nextInd;
         this.type = BinaryConstraintsType.insideDuplicates;
+
 
     }
 

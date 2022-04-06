@@ -4,7 +4,6 @@ import java.util.List;
 public class Field {
     private List<Integer> possibleVals;
     private final Indices indices;
-    private static boolean DEFAULT_VAL_SET = true;
 
 
 
@@ -40,7 +39,6 @@ public class Field {
     }
 
     public static Field createForSingleValue(Indices indices, int value) {
-        DEFAULT_VAL_SET = false;
         Field result = new Field(indices);
         result.possibleVals.add(value);
         return result;
@@ -64,7 +62,6 @@ public class Field {
             possibleVals.clear();
 
             possibleVals.add(value);
-            DEFAULT_VAL_SET = false;
             return true;
         }
         return false;
@@ -89,9 +86,6 @@ public class Field {
     public boolean removeForbiddenValues(List<Integer> forbidenValues) {
         possibleVals.removeAll(forbidenValues);
         return possibleVals.size() >= 1;
-    }
-    public boolean notDefault_value(){
-       return !DEFAULT_VAL_SET;
     }
 
     public Indices getIndices() {
