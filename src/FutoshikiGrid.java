@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +30,7 @@ public class FutoshikiGrid extends AbstractGrid{
         Field field = getFieldForCoordinates(ind);
         if(field != null) {
             if (field.hasMoreThanOnePossibility())
-                return new ArrayList<>(field.getNumberOfpossibleVals());
+                return new ArrayList<>(field.getPossibleVals());
             else
                 return new ArrayList<>();
         }

@@ -59,12 +59,11 @@ public class Solutions {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(algorithm).append(": ").append(fileName).append("\n")
-                .append(String.format("%30s", "Total number of solutions: ")).append(allSolutions.size()).append("\n");
-
-                //.append(String.format("%30s", "Moves for first: ")).append(allSolutions.get(0).getNumberOfMoves()).append("\n")
-               //.append(String.format("%30s", "Total moves: ")).append(moveCounter).append("\n")
-                //.append(String.format("%30s", "Time for first: ")).append(getFirstTime()).append(" s").append("\n")
-               //.append(String.format("%30s", "Total end time: ")).append(getTotalTime()).append(" s");
+                .append(String.format("%30s", "Total number of solutions: ")).append(allSolutions.size()).append("\n")
+                .append(String.format("%30s", "Moves for first: ")).append(allSolutions.get(0).getNumberOfMoves()).append("\n")
+               .append(String.format("%30s", "Total moves: ")).append(moveCounter).append("\n")
+                .append(String.format("%30s", "Time for first: ")).append(getFirstTime()).append(" s").append("\n")
+               .append(String.format("%30s", "Total end time: ")).append(getTotalTime()).append(" s");
         return builder.toString();
 
 

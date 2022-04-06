@@ -78,9 +78,9 @@ public abstract class AbstractGrid implements Grid {
 
     private Tuple<Boolean, Boolean> removeForbiddenValues(Indices ind) {
         Field field = getFieldForCoordinates(ind);
-        int numberOfPossibleValues = field.getNumberOfpossibleVals();
+        int numberOfPossibleValues = field.getNumberOfPossibleValues();
         boolean moreThanOneValLeft = field.removeForbiddenValues(getForbiddenValues(ind));
-        int newNumber = field.getNumberOfpossibleVals();
+        int newNumber = field.getNumberOfPossibleValues();
         boolean possibleValuesChanged = (numberOfPossibleValues != newNumber);
         return new Tuple<>(moreThanOneValLeft, possibleValuesChanged);
     }
@@ -130,25 +130,6 @@ public abstract class AbstractGrid implements Grid {
         }
     }
 
-/*
-    private boolean areOnlyUniqueInSequence(){
-        for(int i = 0; i < grid.size();i++){
-            List<Integer> row = getRow(i).stream().filter(Objects::nonNull).filter(Field::hasOneValue).map(Field::getSingleValue).collect(Collectors.toList());
-            int rowSize = row.size();
-            if (row.stream().distinct().collect(Collectors.toList()).size() != rowSize) {
-                return false;
-            }
-            List<Integer> col = getColumn(i).stream().filter(Objects::nonNull).filter(Field::hasOneValue).map(Field::getSingleValue).collect(Collectors.toList());
-            int colSize = col.size();
-            if (col.stream().distinct().collect(Collectors.toList()).size() != colSize) {
-                return false;
-            }
-
-        }
-        return true;
-    }
-
-*/
 
     public boolean validate() {
         for(int i = 0; i < getGridSize();i++) {
@@ -188,29 +169,7 @@ public abstract class AbstractGrid implements Grid {
         return result;
     }
 
-    /*
 
-    public List<Field> getSequence(int index, String name){
-        List<Field> sequence = new ArrayList<>();
-        switch(name){
-            case "row":
-                sequence.addAll(grid.get(index));
-                break;
-            case "col":
-                List<Field> col = new ArrayList<>();
-                for(List<Field> row: grid){
-                    sequence.add(row.get(index));
-                }
-                break;
-            default:
-                break;
-
-        }
-        return sequence;
-
-    }
-
-     */
 
     @Override
     public String toString() {

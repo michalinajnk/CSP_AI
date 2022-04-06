@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Solver {
 
-    private Indices currField;
+    private Indices currFieldIndices;
     private List<Integer> valuesToCheck;
     private SolverAlgorithm algo;
     private Grid grid;
@@ -22,7 +22,7 @@ public class Solver {
         this.grid = previousSolver.grid.copy();
         this.solutions = previousSolver.solutions;
         System.out.println(grid.toString());
-        algo.move(this.grid, previousSolver.currField, parentVal);
+        algo.move(this.grid, previousSolver.currFieldIndices, parentVal);
         this.solutions.increaseMovementCounter();
         start();
     }
@@ -44,10 +44,10 @@ public class Solver {
 
 
     private void start(){
-        if(currField == null ) {
-            currField = getNextField(grid);
-            if (currField != null) {
-                valuesToCheck = grid.getPossibleValues(currField);
+        if(currFieldIndices == null) {
+            currFieldIndices = getNextField(grid);
+            if (currFieldIndices != null) {
+                valuesToCheck = grid.getPossibleValues(currFieldIndices);
             }
             else {
                 valuesToCheck = new ArrayList<>();

@@ -21,7 +21,7 @@ public class CSPTest {
         //System.out.println(binaryG.toString());
 
 
-        Solutions sol = getSolutionsFor("binary", "binary_6x6");
+        Solutions sol = getSolutionsFor("futoshiki", "futoshiki5_5");
        for(Solution s: sol.getSolutions()){
           System.out.println(s.toString());
        }
@@ -29,15 +29,16 @@ public class CSPTest {
     }
 
     static Solutions getSolutionsFor(String dir, String fileName) throws Exception {
-        SolverAlgorithm backtracking = new Backtracking();
-        Solver solver = new Solver(backtracking, dir + "/" + fileName);
+        //SolverAlgorithm backtracking = new Backtracking();
+        SolverAlgorithm forwardchecking = new ForwardChecking();
+        Solver solver = new Solver(forwardchecking, dir + "/" + fileName);
         Solutions solutions = solver.run();
         System.out.println(solutions);
         return solutions;
     }
 
     public static void manualRun() throws Exception {
-        Grid grid = GridReader.initializeFromFile("futoshiki/futoshiki_4x4");
+        Grid grid = GridReader.initializeFromFile("futoshiki/futoshiki_6x6");
         System.out.println(grid);
         Scanner scanner = new Scanner(System.in);
         while (grid.validate() && !grid.isPoorlyCompleted()) {

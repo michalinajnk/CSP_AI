@@ -51,9 +51,9 @@ public class Field {
     }
 
     public Integer getSingleValue() {
-        if (this.possibleVals.size() != 1) {
-            throw new IllegalStateException("Field does not have exactly one value");
-        }
+       // if (this.possibleVals.size() != 1) {
+      //      throw new IllegalStateException("Field does not have exactly one value");
+     //   }
         return this.possibleVals.get(0);
     }
 
@@ -75,12 +75,12 @@ public class Field {
         return this.possibleVals;
     }
 
-    public int getNumberOfpossibleVals() {
+    public int getNumberOfPossibleValues() {
         return possibleVals.size();
     }
 
     public boolean hasMoreThanOnePossibility(){
-       return getNumberOfpossibleVals() > 1;
+       return getNumberOfPossibleValues() > 1;
     }
 
     public boolean removeForbiddenValues(List<Integer> forbidenValues) {

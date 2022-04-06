@@ -25,8 +25,8 @@ public class Solution {
 
     @Override
     public String toString() {
-        return "Solution{" +
-                "grid=" + grid.toString() +
+        return "Solution{ " +
+                "grid: " +"\n" +  grid.toString() +
                 ", numberOfMoves=" + numberOfMoves +
                 ", endTime=" + endTime +
                 '}';
