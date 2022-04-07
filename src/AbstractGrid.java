@@ -129,6 +129,68 @@ public abstract class AbstractGrid implements Grid {
             }
         }
     }
+    @Override
+    public boolean isCorrectNumberOfValuesInSequence() {
+        for(int i=0; i< getGridSize(); i++) {
+            List<Integer> checkingCol =  getValuesAlreadyInSeq(getColumn(i));
+            List<Integer> checkingRow =  getValuesAlreadyInSeq(getRow(i));
+            int size = getGridSize();
+            Tuple<Integer, Integer> valuesInColumn = getNumberOfValues(checkingCol);
+            boolean isFull = (valuesInColumn.getKey() + valuesInColumn.getValue() == getGridSize());
+
+            if (isFull  &&  (valuesInColumn.getKey() != getGridSize() / 2 ||  valuesInColumn.getValue() != getGridSize() / 2)) {
+                System.out.println("IS FULL AND Not correct number of val in column, numer of column: " + i);
+                System.out.println("Values in column of 0: " + valuesInColumn.getKey() + " of column: " + i);
+                System.out.println("Values in column of 1: " + valuesInColumn.getValue() + " of column: " + i);
+
+                System.out.println("IS FULL AND Not correct number of val in column, numer of column: " + i);
+                return false;
+            }
+            else if(valuesInColumn.getKey() > getGridSize() / 2 || valuesInColumn.getValue() > getGridSize() / 2) {
+                System.out.println("ONE OF VAL IS MORE THAN THE HALS SIZE OF GRID in column");
+                return false;
+            }
+
+            Tuple<Integer, Integer> valuesInRow = getNumberOfValues(checkingRow);
+            isFull = (valuesInRow.getKey() + valuesInRow.getValue() == getGridSize());
+
+            if (isFull  &&  (valuesInRow.getKey() != getGridSize() / 2 || valuesInRow.getValue() != getGridSize() / 2)) {
+                System.out.println("IS FULL AND Not correct number of val in row");
+                return false;
+            }
+            else if(valuesInRow.getKey() > getGridSize() / 2 || valuesInRow.getValue() > getGridSize() / 2) {
+                System.out.println("ONE OF VAL IS MORE THAN THE HALS SIZE OF GRID in row");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected Tuple<Integer, Integer> getNumberOfValues(List<Integer> checkingSeq){
+        int ones = (int) checkingSeq.stream().filter(ele -> ele == 1).count();
+        int zeros = (int) checkingSeq.stream().filter(ele -> ele == 0).count();
+        return new Tuple(ones, zeros);
+    }
+
+    public boolean areUnique(List<List<Integer>> seques){
+        HashSet unique = new HashSet();
+        for(List<Integer> seq: seques ) {
+            if(seq.size() == getGridSize())
+                unique.add(seq);
+        }
+        return unique.size() == seques.size();
+    }
+
+    @Override
+    public boolean areSequencesUnique(){
+        List<List<Integer>> rows = new ArrayList<>();
+        List<List<Integer>> cols = new ArrayList<>();
+        for(int i= 0 ; i < getGridSize(); i++) {
+            cols.add(getValuesAlreadyInSeq(getColumn(i)));
+            rows.add(getValuesAlreadyInSeq(getRow(i)));
+        }
+        return areUnique(cols) && areUnique(rows);
+    }
 
 
     public boolean validate() {

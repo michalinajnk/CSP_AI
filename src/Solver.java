@@ -23,7 +23,7 @@ public class Solver {
         this.algo= previousSolver.algo;
         this.grid = previousSolver.grid.copy();
         this.solutions = previousSolver.solutions;
-        //System.out.println(grid.toString());
+        System.out.println(grid.toString());
         algo.move(this.grid, previousSolver.currFieldIndices, parentVal);
         this.solutions.increaseMovementCounter();
         start();

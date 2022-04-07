@@ -2,15 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-enum BinaryConstraintsType{
-    insideDuplicates,
-    beginEdgeDuplicates,
-    endEdgeDuplicates
+public abstract class BinaryConstraint implements Constraint{
 
-}
-
-public class BinaryConstraint implements Constraint{
-    private BinaryConstraintsType type;
     private Indices nextInd;
     private Indices previousInd;
     private int forbiddenValue;
@@ -21,13 +14,13 @@ public class BinaryConstraint implements Constraint{
         this.getNext = next;
 
         if(getNext){
-            this.type = BinaryConstraintsType.beginEdgeDuplicates;
+            //this.type = BinaryConstraintsType.beginEdgeDuplicates;
             this.nextInd = ind;
             this.previousInd =null;
 
 
         }else{
-            this.type = BinaryConstraintsType.endEdgeDuplicates;
+           // this.type = BinaryConstraintsType.endEdgeDuplicates;
             this.nextInd = null;
             this.previousInd = ind;
 
@@ -39,10 +32,12 @@ public class BinaryConstraint implements Constraint{
         this.forbiddenValue = forbiddenValue;
         this.previousInd = previousInd;
         this.nextInd = nextInd;
-        this.type = BinaryConstraintsType.insideDuplicates;
+       // this.type = BinaryConstraintsType.insideDuplicates;
 
 
     }
+
+    public abstract boolean checkConstraints(Grid grid, BinaryConstraint constr);
 
     public Indices getLeftSide(){
         return previousInd;
@@ -56,10 +51,10 @@ public class BinaryConstraint implements Constraint{
         return forbiddenValue;
     }
 
-    public BinaryConstraintsType type(){
+  /* public BinaryConstraintsType type(){
         return type;
     }
-
+*/
 
     @Override
     public String toString(){
@@ -76,12 +71,12 @@ public class BinaryConstraint implements Constraint{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BinaryConstraint that = (BinaryConstraint) o;
-        return forbiddenValue == that.forbiddenValue && getNext == that.getNext && type == that.type && Objects.equals(nextInd, that.nextInd) && Objects.equals(previousInd, that.previousInd);
+        return forbiddenValue == that.forbiddenValue && getNext == that.getNext  && Objects.equals(nextInd, that.nextInd) && Objects.equals(previousInd, that.previousInd);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, nextInd, previousInd, forbiddenValue, getNext);
+        return Objects.hash( nextInd, previousInd, forbiddenValue, getNext);
     }
 }
 

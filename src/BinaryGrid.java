@@ -100,15 +100,15 @@ public class BinaryGrid extends AbstractGrid {
             if(previousField != null && currentField!=null) {
                 if (previousField.hasOneValue() && currentField.hasOneValue() && (previousField.getSingleValue() == currentField.getSingleValue())) {
                     if (ind.getNumCol() == 1) {
-                        add(new BinaryConstraint(ind.getNextIndicesInRow(), previousField.getSingleValue(), true));
+                        add(new BeginEdgeDuplicates(ind.getNextIndicesInRow(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(ind.getNextIndicesInRow(), Math.abs(previousField.getSingleValue() - 1)), ind.getNextIndicesInRow());
                     }
                    else if(ind.getNumCol() == getGridSize() - 1) {
-                        add(new BinaryConstraint(previousFieldInRow.getPreviousIndicesInRow(), previousField.getSingleValue(), false));
+                        add(new EndEdgeDuplicates(previousFieldInRow.getPreviousIndicesInRow(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(previousFieldInRow.getPreviousIndicesInRow(), Math.abs(previousField.getSingleValue() - 1)), previousFieldInRow.getPreviousIndicesInRow());
                     }
                    else{
-                        add(new BinaryConstraint(previousFieldInRow.getPreviousIndicesInRow(), ind.getNextIndicesInRow(), previousField.getSingleValue()));
+                        add(new InsideDuplicates(previousFieldInRow.getPreviousIndicesInRow(), ind.getNextIndicesInRow(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(previousFieldInRow.getPreviousIndicesInRow(), Math.abs(previousField.getSingleValue() - 1)), previousFieldInRow.getPreviousIndicesInRow());
                         setField(Field.createForSingleValue(ind.getNextIndicesInRow(), Math.abs(previousField.getSingleValue() - 1)), ind.getNextIndicesInRow());
                     }
@@ -128,15 +128,15 @@ public class BinaryGrid extends AbstractGrid {
             if(previousField != null && currentField!=null) {
                 if (previousField.hasOneValue() && currentField.hasOneValue() && (previousField.getSingleValue() == currentField.getSingleValue())) {
                     if (ind.getNumRow() == 1) {
-                        add(new BinaryConstraint(ind.getNextIndicesInColumn(), previousField.getSingleValue(), true));
+                        add(new BeginEdgeDuplicates(ind.getNextIndicesInColumn(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(ind.getNextIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), ind.getNextIndicesInColumn());
                     }
                     else if(ind.getNumRow() == getGridSize() - 1) {
-                        add(new BinaryConstraint(previousFieldInCol.getPreviousIndicesInColumn(), previousField.getSingleValue(), false));
+                        add(new EndEdgeDuplicates(previousFieldInCol.getPreviousIndicesInColumn(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(previousFieldInCol.getPreviousIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), previousFieldInCol.getPreviousIndicesInColumn());
                     }
                     else {
-                        add(new BinaryConstraint(previousFieldInCol.getPreviousIndicesInColumn(), ind.getNextIndicesInColumn(), previousField.getSingleValue()));
+                        add(new InsideDuplicates(previousFieldInCol.getPreviousIndicesInColumn(), ind.getNextIndicesInColumn(), previousField.getSingleValue()));
                         setField(Field.createForSingleValue(ind.getNextIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), ind.getNextIndicesInColumn());
                         setField(Field.createForSingleValue(previousFieldInCol.getPreviousIndicesInColumn(), Math.abs(previousField.getSingleValue() - 1)), previousFieldInCol.getPreviousIndicesInColumn());
                     }
@@ -147,18 +147,18 @@ public class BinaryGrid extends AbstractGrid {
 
     private void addConstraintOnNumberOfValues(Tuple<Integer, Integer> zerosOnes, int i) {
         if(zerosOnes.getKey() >= getGridSize()){
-            for(int j = 0 ;j < getGridSize(); j++) {
+            for(int j = 0 ; j < getGridSize(); j++) {
                 Indices  ind = new Indices(j, i);
                 Field field = getFieldForCoordinates(ind);
-                add(new BinaryConstraint(ind, 1, false));
+                add(new NoMoreThisValue(ind, 1));
                 setField(Field.createForSingleValue(ind, 0), ind);
 
             }
         } else if(zerosOnes.getValue() >= getGridSize()){
-            for(int j = 0 ;j < getGridSize(); j++) {
+            for(int j = 0 ; j < getGridSize(); j++) {
                 Indices  ind = new Indices(j, i);
                 Field field = getFieldForCoordinates(ind);
-                add(new BinaryConstraint(new Indices(j, i), 0, false));
+                add(new NoMoreThisValue(ind, 0));
                 setField(Field.createForSingleValue(ind, 1), ind);
             }
         }
@@ -175,59 +175,18 @@ public class BinaryGrid extends AbstractGrid {
 
     }
 
-    private boolean areSequencesUnique(){
-        List<List<Integer>> rows = new ArrayList<>();
-        List<List<Integer>> cols = new ArrayList<>();
-        for(int i= 0 ; i < getGridSize(); i++) {
-           cols.add(getValuesAlreadyInSeq(getColumn(i)));
-           rows.add(getValuesAlreadyInSeq(getRow(i)));
-        }
-        return areUnique(cols) && areUnique(rows);
-    }
 
 
     //it based on the possible values for for each indices left
     @Override
     protected boolean checkConstraints() {
+        boolean iNSEQ = isCorrectNumberOfValuesInSequence();
+        boolean result =true;
         rebuildConstraints();
-        if(isCorrectNumberOfValuesInSequence() || areSequencesUnique()) {
             for (BinaryConstraint constr : constraints) {
-                switch(constr.type()) {
-                    case insideDuplicates:
-                        Field leftSideField = getFieldForCoordinates(constr.getLeftSide());
-                        Field rightSideField = getFieldForCoordinates(constr.getRightSide());
-                        if (leftSideField != null && rightSideField != null) {
-                            if (rightSideField.hasOneValue() && leftSideField.hasOneValue()) {
-                                if (leftSideField.getSingleValue() != rightSideField.getSingleValue() || leftSideField.getSingleValue() == constr.getForbiddenValue()) {
-                                    return false;
-                                }
-                            }
-                        }
-                        break;
-
-                    case beginEdgeDuplicates:
-                        Indices ind = constr.getRightSide();
-                        Field nextToDuplicates = getFieldForCoordinates(ind);
-                        if(nextToDuplicates != null && nextToDuplicates.getSingleValue() == constr.getForbiddenValue()){
-                            return false;
-                        }
-                        break;
-
-                    case endEdgeDuplicates:
-                        Indices ind2 = constr.getLeftSide();
-                        Field previousDupl = getFieldForCoordinates(ind2);
-                        if(previousDupl != null && previousDupl.getSingleValue() == constr.getForbiddenValue()){
-                            return false;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
+                 result = constr.checkConstraints(this, constr);
             }
-            return true;
-        }
-        return false;
+        return result && iNSEQ;
     }
 
 
@@ -242,57 +201,12 @@ public class BinaryGrid extends AbstractGrid {
 
 
 
-    public boolean isCorrectNumberOfValuesInSequence() {
-        for(int i=0; i< getGridSize(); i++) {
-            List<Integer> checkingCol =  getValuesAlreadyInSeq(getColumn(i));
-            List<Integer> checkingRow =  getValuesAlreadyInSeq(getRow(i));
-            int size = getGridSize();
-            Tuple<Integer, Integer> valuesInColumn = getNumberOfValues(checkingCol);
-            boolean isFull = (valuesInColumn.getKey() + valuesInColumn.getValue() == getGridSize());
-
-            if (isFull  &&  (valuesInColumn.getKey() != getGridSize() / 2 ||  valuesInColumn.getValue() != getGridSize() / 2)) {
-                System.out.println("IS FULL AND Not correct number of val in column, numer of column: " + i);
-                System.out.println("Values in column of 0: " + valuesInColumn.getKey() + " of column: " + i);
-                System.out.println("Values in column of 1: " + valuesInColumn.getValue() + " of column: " + i);
-
-                System.out.println("IS FULL AND Not correct number of val in column, numer of column: " + i);
-                return false;
-            }
-            else if(valuesInColumn.getKey() > getGridSize() / 2 || valuesInColumn.getValue() > getGridSize() / 2) {
-                System.out.println("ONE OF VAL IS MORE THAN THE HALS SIZE OF GRID in column");
-                return false;
-            }
-
-            Tuple<Integer, Integer> valuesInRow = getNumberOfValues(checkingRow);
-             isFull = (valuesInRow.getKey() + valuesInRow.getValue() == getGridSize());
-
-            if (isFull  &&  (valuesInRow.getKey() != getGridSize() / 2 || valuesInRow.getValue() != getGridSize() / 2)) {
-                System.out.println("IS FULL AND Not correct number of val in row");
-                return false;
-            }
-            else if(valuesInRow.getKey() > getGridSize() / 2 || valuesInRow.getValue() > getGridSize() / 2) {
-                System.out.println("ONE OF VAL IS MORE THAN THE HALS SIZE OF GRID in row");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private Tuple<Integer, Integer> getNumberOfValues(List<Integer> checkingSeq){
-        int ones = (int) checkingSeq.stream().filter(ele -> ele == 1).count();
-        int zeros = (int) checkingSeq.stream().filter(ele -> ele == 0).count();
-        return new Tuple(ones, zeros);
-    }
 
 
-   public boolean areUnique(List<List<Integer>> seques){
-       HashSet unique = new HashSet();
-        for(List<Integer> seq: seques ) {
-            if(seq.size() == getGridSize())
-            unique.add(seq);
-        }
-    return unique.size() == seques.size();
-    }
+
+
+
+
 
 
 }

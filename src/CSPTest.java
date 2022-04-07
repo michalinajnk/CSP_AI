@@ -28,7 +28,7 @@ public class CSPTest {
         SolverAlgorithm forwardchecking = new ForwardChecking();
 
         //Solutions sol = getSolutionsFor(queueHeur, backtracking , "futoshiki", "futoshiki5_5");
-       Solutions sol = getSolutionsFor(constrHeur, backtracking , "binary", "binary_8x8");
+       Solutions sol = getSolutionsFor(queueHeur, backtracking , "binary", "binary_8x8");
         for(Solution s: sol.getSolutions()){
            System.out.println(s.toString());
         }

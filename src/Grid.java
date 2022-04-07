@@ -12,6 +12,10 @@ public interface Grid {
 
     boolean removeAllForbiddenValues();
 
+    boolean isCorrectNumberOfValuesInSequence();
+
+    boolean areSequencesUnique();
+
     int getGridSize();
 
     List<Integer> getGridDomain();
