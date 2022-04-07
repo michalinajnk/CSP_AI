@@ -15,7 +15,6 @@ public class Solver {
         this.algo = algo;
         this.grid = algo.loadGrid(fileName);
         this.solutions = new Solutions(heur.getName(), algo.getSolverName(), fileName);
-        System.out.println(grid.toString());
         start();
     }
 
@@ -24,11 +23,12 @@ public class Solver {
         this.algo= previousSolver.algo;
         this.grid = previousSolver.grid.copy();
         this.solutions = previousSolver.solutions;
-        System.out.println(grid.toString());
+        //System.out.println(grid.toString());
         algo.move(this.grid, previousSolver.currFieldIndices, parentVal);
         this.solutions.increaseMovementCounter();
         start();
     }
+
 /*
     public Indices getNextField(Grid grid) {
         int gridSize = grid.getGridSize();
@@ -57,18 +57,16 @@ public class Solver {
             }
         }
     }
+// run calls validate and validate calls (reload constraint and checkConstraint)
 
     public Solutions run(){
         if(!grid.validate()){
-            System.out.println("MATRIX IS NOT VALIDATE");
             return this.solutions;
         } else if(grid.isPoorlyCompleted()) {
-            System.out.println("MATRIX IS POORLY COMPLETED");
             this.solutions.addSolution(new Solution(grid, solutions.getMovementCounter(),  System.currentTimeMillis()));
             return solutions;
         } else {
             for (Integer value : valuesToCheck) {
-                System.out.println("RECURRENCY");
                 new Solver(this, value).run();
             }
         }

@@ -26,7 +26,7 @@ public class BinaryGrid extends AbstractGrid {
         return domain;
 
     }
-    
+
     public List<BinaryConstraint> getConstraints(){
         return constraints;
     }
@@ -70,7 +70,7 @@ public class BinaryGrid extends AbstractGrid {
 
     @Override
     public boolean move(Indices ind, int value){
-        addInitialConstraints();
+
         Field field = getFieldForCoordinates(ind);
         if(field == null) {
             setField(Field.createForSingleValue(ind, value), ind);
@@ -81,7 +81,7 @@ public class BinaryGrid extends AbstractGrid {
     }
 
 
-    public void addInitialConstraints(){
+    public void rebuildConstraints(){
         constraints.clear();
         for(int i=0; i < getGridSize(); i++) {
             for (int j = 0; j < getGridSize(); j++) {
@@ -186,8 +186,10 @@ public class BinaryGrid extends AbstractGrid {
     }
 
 
+    //it based on the possible values for for each indices left
     @Override
     protected boolean checkConstraints() {
+        rebuildConstraints();
         if(isCorrectNumberOfValuesInSequence() || areSequencesUnique()) {
             for (BinaryConstraint constr : constraints) {
                 switch(constr.type()) {

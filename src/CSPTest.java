@@ -27,7 +27,8 @@ public class CSPTest {
         SolverAlgorithm backtracking = new Backtracking();
         SolverAlgorithm forwardchecking = new ForwardChecking();
 
-        Solutions sol = getSolutionsFor(constrHeur, backtracking , "futoshiki", "futoshiki5_5");
+        //Solutions sol = getSolutionsFor(queueHeur, backtracking , "futoshiki", "futoshiki5_5");
+       Solutions sol = getSolutionsFor(constrHeur, backtracking , "binary", "binary_8x8");
         for(Solution s: sol.getSolutions()){
            System.out.println(s.toString());
         }
@@ -57,7 +58,6 @@ public class CSPTest {
     }
 
     static List<Solutions> runforFiles(Heuristic heur, String directory, List<String> fileNames) throws Exception {
-
         List<Solutions> allSolutions = new ArrayList<>();
         for (String fileName : fileNames) {
             Solver Solver = new Solver(heur, new Backtracking(), directory + "/" + fileName);

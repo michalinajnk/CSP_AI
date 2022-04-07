@@ -90,7 +90,7 @@ public class GridReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        binaryGrid.addInitialConstraints();
+        binaryGrid.rebuildConstraints();
         return binaryGrid;
     }
 
